@@ -31,7 +31,7 @@ Living with the Great Firewall means tools like `cargo`, `git`, `wget`, and `cur
 
 ---
 
-## Installation
+## Installation (didn't tested yet)
 
 ```sh
 cargo install --path .
@@ -107,8 +107,6 @@ Change them there if your v2rayN setup uses a different port (e.g. `7890` for Cl
 | `GIT_HTTP_PROXY_AUTHMETHOD` | `basic` |
 
 `socks5h` means DNS resolution also goes through the proxy — important for avoiding DNS leaks and SNI-based blocking.
-
-The child process inherits stdin/stdout/stderr directly, so interactive commands work fine. Exit codes are forwarded as-is.
 
 ---
 
