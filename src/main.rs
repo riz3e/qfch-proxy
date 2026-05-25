@@ -13,10 +13,7 @@ fn main() {
         process::exit(1);
     }
 
-    let config = Config::build(&args).unwrap_or_else(|err| {
-        eprintln!("Problem parsing arguments: {}", err);
-        process::exit(1);
-    });
+    let config = Config::new(&args);
 
     if let Err(e) = run(config.cmd, config.rest, PROXY_HOST, PROXY_PORT) {
         eprintln!("\x1b[31m[qfch] error: {}\x1b[0m", e);
@@ -30,10 +27,10 @@ struct Config {
 }
 
 impl Config {
-    fn build(args: &[String]) -> Result<Config, &'static str> {
-        let cmd = args[1].clone();
-        let rest = args[2..].to_vec();
-
-        Ok(Config { cmd, rest })
+    fn new(args: &[String]) -> Config {
+        Config {
+            cmd: args[1].clone(),
+            rest: args[2..].to_vec(),
+        }
     }
 }
