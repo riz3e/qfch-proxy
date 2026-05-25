@@ -1,6 +1,6 @@
 [package]
 name = "qfch"
-version = "0.1.0"
+version = "0.3.0"
 edition = "2021"
 description = "Run commands through v2rayN SOCKS5 proxy (port 10808)"
 
