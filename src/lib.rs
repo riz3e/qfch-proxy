@@ -19,13 +19,16 @@ pub fn print_usage(proxy_host: &str, proxy_port: u16) {
     );
     eprintln!();
     eprintln!("Usage:");
-    eprintln!("  qfch <command> [args...]");
+    eprintln!("  qfch [--port <port>] <command> [args...]");
+    eprintln!();
+    eprintln!("Options:");
+    eprintln!("  --port <port>    Proxy port (default: 10808 for v2rayN, use 7890 for Clash)");
     eprintln!();
     eprintln!("Examples:");
     eprintln!("  qfch git push -u origin main");
-    eprintln!("  qfch curl https://example.com");
+    eprintln!("  qfch --port 7890 curl https://example.com");
     eprintln!("  qfch cargo add serde");
-    eprintln!("  qfch wget https://example.com/file.zip");
+    eprintln!("  qfch --port 7890 wget https://example.com/file.zip");
 }
 
 use std::error::Error;
@@ -59,4 +62,38 @@ pub fn run(
         .status()?;
 
     process::exit(status.code().unwrap_or(1));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn proxy_env_vars_count() {
+        let proxies = proxy_env_vars("localhost", 1080);
+        assert_eq!(proxies.len(), 7);
+    }
+
+    #[test]
+    fn proxy_env_vars_socks5h_scheme() {
+        let proxies = proxy_env_vars("127.0.0.1", 1080);
+        for (key, val) in &proxies {
+            if *key != "GIT_HTTP_PROXY_AUTHMETHOD" {
+                assert!(
+                    val.starts_with("socks5h://"),
+                    "expected socks5h:// in {key}={val}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn proxy_env_vars_git_authmethod() {
+        let proxies = proxy_env_vars("localhost", 1080);
+        let git_auth = proxies
+            .iter()
+            .find(|(k, _)| *k == "GIT_HTTP_PROXY_AUTHMETHOD")
+            .map(|(_, v)| v.as_str());
+        assert_eq!(git_auth, Some("basic"));
+    }
 }

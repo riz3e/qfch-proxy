@@ -51,23 +51,27 @@ cp target/release/qfch ~/.local/bin/
 ## Usage
 
 ```
-qfch <command> [args...]
+qfch [--port <port>] <command> [args...]
 ```
+
+### Options
+
+- `--port <port>` - Specify proxy port (default: 10808 for v2rayN, use 7890 for Clash)
 
 ### Examples
 
 ```sh
-# Rust / Cargo
+# Rust / Cargo (default v2rayN port)
 qfch cargo add serde
 qfch cargo update
 
-# Git
-qfch git push -u origin main
-qfch git clone https://github.com/user/repo
+# Git with Clash proxy
+qfch --port 7890 git push -u origin main
+qfch --port 7890 git clone https://github.com/user/repo
 
 # curl / wget
 qfch curl https://example.com
-qfch wget https://example.com/file.zip
+qfch --port 7890 wget https://example.com/file.zip
 
 # Anything else
 qfch npm install
@@ -84,14 +88,15 @@ qfch --help
 
 ## Configuration
 
-Proxy host and port are hardcoded constants in `src/main.rs`:
+Default proxy settings:
+- Host: `127.0.0.1` (hardcoded in `src/main.rs`)
+- Port: `10808` (v2rayN default, can be overridden with `--port`)
 
-```rust
-const PROXY_HOST: &str = "127.0.0.1";
-const PROXY_PORT: u16 = 10808;
-```
+Common ports:
+- `10808` - v2rayN default SOCKS5 port
+- `7890` - Clash default SOCKS5 port
 
-Change them there if your v2rayN setup uses a different port (e.g. `7890` for Clash-compatible configs).
+Use `--port` flag to switch between different proxy configurations without rebuilding.
 
 ---
 
