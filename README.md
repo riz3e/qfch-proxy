@@ -31,7 +31,7 @@ Living with the Great Firewall means tools like `cargo`, `git`, `wget`, and `cur
 
 ---
 
-## Installation (didn't tested yet)
+## Installation
 
 ```sh
 cargo install --path .
