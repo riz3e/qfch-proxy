@@ -31,7 +31,8 @@ pub fn print_usage(proxy_host: &str, proxy_port: u16) {
     eprintln!("  qfch --port 7890 wget https://example.com/file.zip");
 }
 
-use std::error::Error;
+use std::task::Wake;
+use std::{error::Error, fmt::format};
 
 pub fn run(
     cmd_str: String,
@@ -62,6 +63,27 @@ pub fn run(
         .status()?;
 
     process::exit(status.code().unwrap_or(1));
+}
+
+use std::net::TcpStream;
+use std::time::Duration;
+
+// PORT CHECKING
+
+pub fn is_port_open(host: &str, port: u16) -> bool {
+    let addr = format!("{}:{}", host, port);
+    TcpStream::connect_timeout(&addr.parse().unwrap(), Duration::from_millis(200)).is_ok()
+}
+
+const KNOWN_PROXY_PORTS: &[u16] = &[10808, 7890, 1080, 10809];
+
+pub fn detect_proxy_port(host: &str) -> Option<u16> {
+    for port in KNOWN_PROXY_PORTS {
+        if is_port_open(host, *port) {
+            return Some(*port);
+        }
+    }
+    None
 }
 
 #[cfg(test)]

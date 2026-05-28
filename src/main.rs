@@ -1,3 +1,4 @@
+use qfch::detect_proxy_port;
 use qfch::{print_usage, run};
 use std::env;
 use std::process;
@@ -29,7 +30,7 @@ struct Config {
 
 impl Config {
     fn new(args: &[String]) -> Config {
-        let mut port = DEFAULT_PROXY_PORT;
+        let mut port;
         let mut cmd_idx = 1;
 
         // Check for --port flag
@@ -46,6 +47,15 @@ impl Config {
                 process::exit(1);
             });
             cmd_idx = 3;
+        } else {
+            let available_port = detect_proxy_port(PROXY_HOST);
+            port = match available_port {
+                Some(p) => p,
+                None => {
+                    eprintln!("\x1b[31m[qfch] error: No ports open.\x1b[0m");
+                    process::exit(1);
+                }
+            }
         }
 
         Config {
